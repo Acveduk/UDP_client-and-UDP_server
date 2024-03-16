@@ -1,0 +1,17 @@
+{
+  "object_id": "ABC123",
+  "location": {
+    "latitude": 40.7128,
+    "longitude": -74.0060,
+    "altitude": 10
+  },
+  "velocity": {
+    "speed": 20,
+    "direction": 45
+  },
+  "acceleration": {
+    "magnitude": 5,
+    "direction": 90
+  },
+  "timestamp": "2024-03-16T12:00:00"
+}
