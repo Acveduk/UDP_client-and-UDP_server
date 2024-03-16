@@ -3,7 +3,6 @@ import os
 import socket
 import threading
 
-
 from kit import Kit
 
 
@@ -12,8 +11,12 @@ def listen(s: socket.socket):
     :param s: Сокет
     """
     while True:
-        msg = s.recv(1024)
-        print('\r\r' + msg.decode() + '\n' + 'Передайте путь к файлу(JSON): ', end='')
+        try:
+            msg = s.recv(1024)
+            print('\r\r' + msg.decode() + '\n' + 'Передайте путь к файлу(JSON): ', end='')
+        except ConnectionRefusedError as e:
+            print('\nНевозможно соединится с сервером! Попробуйте позже!')
+            continue
 
 
 def connect(host: str = '127.0.0.1', port: int = 3000):
@@ -31,12 +34,18 @@ def connect(host: str = '127.0.0.1', port: int = 3000):
     while True:
         path_json = input('Передайте путь к файлу(JSON): ')
 
-        with open(path_json, 'r') as file:
-            json_data = json.load(file)
-
-        kit = Kit(json_data, 61166)
-        while kit.SERIAL_NUMBER_PARAMETRIC_STRING <= kit.total_parametric_strings:
-            s.send(kit.pack())
+        try:
+            with open(path_json, 'r') as file:
+                json_data = json.load(file)
+            kit = Kit(json_data, 61166)
+            while kit.SERIAL_NUMBER_PARAMETRIC_STRING <= kit.total_parametric_strings:
+                s.send(kit.pack())
+        except FileNotFoundError:
+            print('Файл не найден!')
+            continue
+        except json.decoder.JSONDecodeError:
+            print('Вы передали файл с не данными формата JSON')
+            continue
 
 
 if __name__ == '__main__':
